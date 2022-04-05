@@ -1,19 +1,31 @@
 import {RoleDto} from "../dto/RoleDto"
 import {Role} from "../db";
 import {ORoleCreateDto} from "../dto/ORoleCreateDto";
+import {ORoleFindByID} from "../dto/ORoleFindByID";
+import {IRoleCreateDto} from "../dto/IRoleCreateDto";
 
 export default new (class {
     async getAll(): Promise<RoleDto[]> {
         return Role.find()
     }
+    async get(id: string): Promise<ORoleFindByID> {
+        let candidate = await Role.findOne({id_: id})
 
-    async get(filter: RoleDto | undefined): Promise<RoleDto | undefined> {
-        let candidate = await Role.findOne(filter || {})
+        if (!candidate) {
+            return {
+                status: 404,
+                error: "Роль не найдена",
+                role: undefined
+            }
+        }
 
-        return candidate
+        return {
+            status: 200,
+            error: undefined,
+            role: candidate
+        }
     }
-
-    async create(data: RoleDto): Promise<ORoleCreateDto | undefined> {
+    async create(data: IRoleCreateDto): Promise<ORoleCreateDto> {
         let candidate = await Role.findOne({system_name: data.system_name})
 
         if (candidate) return {

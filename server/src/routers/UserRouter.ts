@@ -1,6 +1,6 @@
 import express from "express";
 import ValidatorMiddleware from "../middlewares/ValidatorMiddleware";
-import {body} from "express-validator";
+import {body, param} from "express-validator";
 import UserService from "../services/UserService";
 import AuthMiddleware from "../middlewares/AuthMiddleware";
 import UserController from "../controllers/UserController";
@@ -32,6 +32,10 @@ router.get("/me",
     UserController.me
 )
 router.get("/", UserController.getAll)
-router.get("/:id", UserController.get)
+router.get("/:id",
+    param("id")
+        .notEmpty()
+        .isString(),
+    UserController.get)
 
 export default router;
